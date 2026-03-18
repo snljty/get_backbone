@@ -76,38 +76,45 @@ private:
 
 class Backbone_extracter;
 
-class Gjf_file {
+class Geom_file {
 private:
     int natoms;
     const PeriodicTable& periodic_table = PeriodicTable::get();
     std::vector<std::string> elements;
     Eigen::MatrixXd coordinates;
     Eigen::VectorXd atomic_covalence_radius;
-    std::string filename_prefix;
+    std::string filename_prefix, filename_suffix;
 public:
-    Gjf_file() = default;
-    Gjf_file(std::string_view ifilename);
+    Geom_file() = default;
+    Geom_file(std::string_view ifilename);
 private:
     void set_natoms(int natoms);
-    void read_gjf(std::string_view ifilename);
-    void write_gjf(std::string_view keywords="#P B3LYP/6-31G** EmpiricalDispersion=GD3BJ") const;
+    void read_gjf();
+    void read_xyz();
+    void write_gjf(std::string_view keywords="#P") const;
+    void write_xyz() const;
     friend class Backbone_extracter;
+public:
+    void read(std::string_view ifilename);
+    void write(std::string_view keywords="#P B3LYP/6-31G** EmpiricalDispersion=GD3BJ") const;
 };
 
 class Backbone_extracter {
-public:
-    Gjf_file mol_origin;
-    Gjf_file mol_trimmed;
-    Gjf_file mol_backbone_no_hydrogen;
+private:
+    Geom_file mol_origin;
+    Geom_file mol_trimmed;
+    Geom_file mol_backbone_no_hydrogen;
     Eigen::MatrixXi connections;
     std::vector<int> alkyl_connection_site, backbone, backbone_no_hydrogen, alkyl, hydrogens_to_optimize;
 
+public:
     Backbone_extracter(std::string_view ifilename);
     void set_connect(int iatom, int jatom); // counts from 1
     void set_disconnect(int iatom, int jatom); // counts from 1
-    void get_connections();
     void get_backbone();
     void write_results() const;
+private:
+    void get_connections();
 };
 
 std::vector<int> indices_str_to_list_from_0(const std::string& indices);

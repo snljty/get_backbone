@@ -56,6 +56,7 @@ void Backbone_extracter::get_backbone() {
     hydrogens_to_optimize.clear();
     mol_trimmed.set_natoms(natoms_trimmed);
     mol_trimmed.filename_prefix = mol_origin.filename_prefix + "_trimmed";
+    mol_trimmed.filename_suffix = mol_origin.filename_suffix;
     for (size_t i = 0; i < backbone.size(); ++ i) {
         mol_trimmed.elements[i] = mol_origin.elements[backbone[i]];
         mol_trimmed.coordinates.col(i) = mol_origin.coordinates.col(backbone[i]);
@@ -85,6 +86,7 @@ void Backbone_extracter::get_backbone() {
 
     mol_backbone_no_hydrogen.set_natoms(backbone_no_hydrogen.size());
     mol_backbone_no_hydrogen.filename_prefix = mol_origin.filename_prefix + "_backbone_only";
+    mol_backbone_no_hydrogen.filename_suffix = mol_origin.filename_suffix;
     for (size_t i = 0; i < backbone_no_hydrogen.size(); ++ i) {
         mol_backbone_no_hydrogen.elements[i] = mol_origin.elements[backbone_no_hydrogen[i]];
         mol_backbone_no_hydrogen.coordinates.col(i) = mol_origin.coordinates.col(backbone_no_hydrogen[i]);
@@ -92,8 +94,8 @@ void Backbone_extracter::get_backbone() {
 }
 
 void Backbone_extracter::write_results() const {
-    mol_trimmed.write_gjf();
-    mol_backbone_no_hydrogen.write_gjf();
+    mol_trimmed.write();
+    mol_backbone_no_hydrogen.write();
     fmt::print("{:s}\n", list_to_indices_str_from_1(backbone));
     fmt::print("{:s}\n", list_to_indices_str_from_1(hydrogens_to_optimize));
 }
